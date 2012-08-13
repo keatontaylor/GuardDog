@@ -1,6 +1,0 @@
-Home Security System TODO:
-	Accessible API for status and statistical information. (Keaton)
-	Intelligent code for statistical analysis. (Aaron)
-	Simple iPhone and Android App. (iPhone Keaton, Android Aaron) 
-	Harden the BeagleBone OS. (Disable root, setup iptables to block all but allowed ports for incoming and outgoing traffic)
-	
