@@ -23,8 +23,8 @@ public function processApi()
 		$key = $row['2'];
 	}
 
-	$hash = hash_hmac('SHA1', $_REQUEST['request'].$_REQUEST['key'], $key);
-	if($hash === $_REQUEST['hash'])
+	$hash = hash_hmac('SHA1', $_REQUEST['request'].$_REQUEST['key'].$_REQUEST['timestamp'], $key);
+	if($hash === $_REQUEST['hash'] && $_REQUEST['timestamp'] > (time() - 300) )
 	{
 		$func = $_REQUEST['request'];
 		if((int)method_exists($this,$func) > 0)
@@ -34,7 +34,6 @@ public function processApi()
 	}
 	else
 	{
-		echo $hash;
     		$this->response('Unauthorized',401);
 	}
 }
