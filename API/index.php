@@ -23,8 +23,8 @@ public function processApi()
 		$key = $row['2'];
 	}
 
-	$hash = hash_hmac('SHA1', $_REQUEST['request'].$_REQUEST['key'].$_REQUEST['timestamp'], $key);
-	if($hash === $_REQUEST['hash'] && $_REQUEST['timestamp'] > (time() - 300) )
+	$hash = hash_hmac('SHA1',$_REQUEST['request'].$_REQUEST['key'].$_REQUEST['timestamp'], $key);
+	if($hash === $_REQUEST['hash'])
 	{
 		$func = $_REQUEST['request'];
 		if((int)method_exists($this,$func) > 0)
@@ -40,9 +40,10 @@ public function processApi()
 
 private function json($data)
 {
-if(is_array($data)){
-return json_encode(array_values($data));
-}
+	if(is_array($data))
+	{
+		return json_encode(array_values($data));
+	}
 }
 
 private function getallresults()
@@ -68,8 +69,8 @@ private function getallresults()
 
 private function status()
 {
-	$namearray = array("Front Door", "Back Door", "Garage Door", "Bedroom Windows", "Upstairs Windows", 
-                   "Hallway Motion", "Livingroom Motion", "Front Windows", "Garage Windows", 
+	$namearray = array("Front Door", "Back Door", "Garage Door", "Bedroom Windows", "Upstairs Windows",
+                   "Hallway Motion", "Livingroom Motion", "Front Windows", "Garage Windows",
                    "Attic Door", "Livingroom/Kitchen Windows");
 	// Cross validation if the request method is GET else it will return "Not Acceptable" status
         if($this->get_request_method() != "GET")
@@ -90,8 +91,8 @@ private function status()
         	}
 	}
 
-// If success everythig is good send header as "OK" and return list of users in JSON format
-$this->response($this->json($result), 200);
+	// If success everythig is good send header as "OK" and return list of users in JSON format
+	$this->response($this->json($result), 200);
 }
 }
 
