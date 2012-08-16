@@ -7,19 +7,36 @@ class API extends REST
 
 public function __construct()
 {
-parent::__construct();// Init parent contructor
+	parent::__construct();// Init parent contructor
 }
 
 //Public method for access api.
 //This method dynmically call the method based on the query string
 public function processApi()
 {
-$func = strtolower(trim(str_replace("/","",$_REQUEST['rquest'])));
-if((int)method_exists($this,$func) > 0)
-$this->$func();
-else
-$this->response('',404); 
-// If the method not exist with in this class, response would be "Page not found".
+	$publickey = $_REQUEST['key'];
+	$dir = 'sqlite:/etc/SmartHome/Databases/APIUsers.sqlite';
+        $dbh  = new PDO($dir) or die("cannot open the database");
+        $query =  "SELECT * from Users WHERE PublicKey = '$publickey'";
+	foreach ($dbh->query($query) as $row)
+        {
+		$key = $row['2'];
+	}
+
+	$hash = hash_hmac('SHA1', $_REQUEST['request'].$_REQUEST['key'], $key);
+	if($hash === $_REQUEST['hash'])
+	{
+		$func = $_REQUEST['request'];
+		if((int)method_exists($this,$func) > 0)
+			$this->$func();
+		else
+			$this->response('',404);
+	}
+	else
+	{
+		echo $hash;
+    		$this->response('Unauthorized',401);
+	}
 }
 
 private function json($data)
