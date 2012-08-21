@@ -2,7 +2,7 @@
 
 require_once("Rest.inc.php");
 
-class API extends REST 
+class API extends REST
 {
 
 public function __construct()
@@ -23,8 +23,8 @@ public function processApi()
 		$key = $row['2'];
 	}
 
-	$hash = hash_hmac('SHA1',$_REQUEST['request'].$_REQUEST['key'].$_REQUEST['timestamp'], $key);
-	if($hash === $_REQUEST['hash'])
+	$hash = hash_hmac('SHA1',$_REQUEST['request'].$_REQUEST['key'].$_REQUEST['time'], $key);
+	if($hash === $_REQUEST['hash'] && $_REQUEST['time'] > (time() - 60) )
 	{
 		$func = $_REQUEST['request'];
 		if((int)method_exists($this,$func) > 0)
@@ -42,8 +42,49 @@ private function json($data)
 {
 	if(is_array($data))
 	{
-		return json_encode(array_values($data));
+		$encoded = json_encode($data, false);
+		return json_encode($data);
 	}
+}
+
+private function addtosyslog()
+{
+	if($this->get_request_method() != "GET")
+	{
+		$this->response('',406);
+	}
+
+	$dir = 'sqlite:/etc/SmartHome/Databases/SysLog.sqlite';
+        $dbh  = new PDO($dir) or die("cannot open the database");
+        $dbh->exec("INSERT INTO Log (Time, Text) VALUES('".time()."',  '".str_replace("-", " ", $_REQUEST['text'])."' )");
+
+	$this->response('Success', 200);
+}
+
+private function getsyslog()
+{
+	// Cross validation if the request method is GET else it will return "Not Acceptable" status
+        if($this->get_request_method() != "GET")
+        {
+                $this->response('',406);
+        }
+        $dir = 'sqlite:/etc/SmartHome/Databases/SysLog.sqlite';
+        $dbh  = new PDO($dir) or die("cannot open the database");
+        $query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
+        while ($entry = $query->fetch(SQLITE_NUM))
+        {
+                $result[] = $entry;
+        }
+ 	$dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
+        $dbh  = new PDO($dir) or die("cannot open the database");
+        $query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
+        while ($entry = $query->fetch(SQLITE_NUM))
+        {
+                $result[] = $entry;
+        }
+
+
+        $this->response($this->json($result), 200);
 }
 
 private function getallresults()
@@ -53,17 +94,16 @@ private function getallresults()
 	{
 		$this->response('',406);
 	}
-	$result = array();
 	$dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
         $dbh  = new PDO($dir) or die("cannot open the database");
-	$query = $dbh->query('SELECT * from Log ORDER BY Time DESC');
+	$query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
 	while ($entry = $query->fetch(SQLITE_NUM))
 	{
 		$result[] = $entry;
 	}
 
-	// If success everythig is good send header as "OK" and return list of users in JSON format
 	$this->response($this->json($result), 200);
+
 }
 
 
@@ -92,7 +132,7 @@ private function status()
 	}
 
 	// If success everythig is good send header as "OK" and return list of users in JSON format
-	$this->response($this->json($result), 200);
+	$this->response(json_encode($result, true), 200);
 }
 }
 

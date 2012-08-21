@@ -15,3 +15,14 @@ class DBM():
       # network to perform classification of a new
       # entry into one of those clusters, then output
       # that neural network to a DB/file
+
+   
+   def findAvgDistance():
+      # TODO: write code to find the average distance 
+      # between any two data entries
+
+   def loadDataPoints():
+      # TODO: write code to load all of the database 
+      # entries into internal data structures
+
+   def 
