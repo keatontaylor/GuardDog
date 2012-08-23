@@ -1,15 +1,28 @@
-from pins import *
+from bbio import *
 import sqlite3 as lite
 from smtplib import SMTP_SSL
 from email.MIMEText import MIMEText
 from config import *
 
+class pinStructure:
+    def __init__(self, pin, name, state, lastevent):
+        self.pin = pin
+	self.name = name
+	self.state = state
+	self.lastevent = lastevent
+	self.timeslo = 0
+
+zones = []
 mysql = []
 
 # Setup the GPIO pins for input 
 def setup():
-	for zone in zones:
-		pinMode(zone.pin, INPUT)
+	con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
+        cur = con.cursor()
+        
+	for row in cur.execute('SELECT * FROM Zones'):
+        	zones.append(pinStructure(row[1], row[2], True, time.time()))
+		pinMode(row[1], INPUT)
 
 # Overview: Loops continously pooling each of the pins connected to the alarm door window and motion sensors.
 #           Checks if the zone has changed state and then executes commands to update the sql database.	
