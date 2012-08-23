@@ -47,6 +47,22 @@ private function json($data)
 	}
 }
 
+private function zones()
+{
+	if($this->get_request_method() != "GET")
+		$this->response('', 406);
+
+	$dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
+	$dbh = new PDO($dir) or die ("cannot open the database");
+	$query = $dbh->query('SELECT * from Zones');
+        while ($entry = $query->fetch(SQLITE_NUM))
+        {
+                $result[] = $entry;
+        }
+
+	$this->response($this->json($result), 200);
+}
+
 private function addtosyslog()
 {
 	if($this->get_request_method() != "GET")
