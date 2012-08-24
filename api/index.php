@@ -15,15 +15,15 @@ public function __construct()
 public function processApi()
 {
 	$publickey = $_REQUEST['key'];
-	$dir = 'sqlite:/etc/SmartHome/Databases/APIUsers.sqlite';
-        $dbh  = new PDO($dir) or die("cannot open the database");
-        $query =  "SELECT * from Users WHERE PublicKey = '$publickey'";
-	foreach ($dbh->query($query) as $row)
-        {
+	
+	$dbh = new PDO('sqlite:/etc/SmartHome/Databases/APIUsers.sqlite');
+	$results = $dbh->Query("SELECT * from Users WHERE PublicKey = '$publickey'");
+	while ($row = $results->Fetch(PDO::FETCH_ASSOC)) 
+	{
 		$key = $row['2'];
 	}
 
-	$hash = hash_hmac('SHA1',$_REQUEST['request'].$_REQUEST['key'].$_REQUEST['time'], $key);
+	$hash = hash_hmac('SHA1', $_REQUEST['request'].$_REQUEST['key'].$_REQUEST['time'], $key);
 	if($hash === $_REQUEST['hash'] && $_REQUEST['time'] > (time() - 60) )
 	{
 		$func = $_REQUEST['request'];
@@ -38,19 +38,12 @@ public function processApi()
 	}
 }
 
-private function json($data)
-{
-	if(is_array($data))
-	{
-		$encoded = json_encode($data, false);
-		return json_encode($data);
-	}
-}
-
 private function zones()
 {
 	if($this->get_request_method() != "GET")
+	{
 		$this->response('', 406);
+	}
 
 	$dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
 	$dbh = new PDO($dir) or die ("cannot open the database");
@@ -60,7 +53,7 @@ private function zones()
                 $result[] = $entry;
         }
 
-	$this->response($this->json($result), 200);
+	$this->response(json_encode($result), 200);
 }
 
 private function addtosyslog()
@@ -80,38 +73,38 @@ private function addtosyslog()
 private function getsyslog()
 {
 	// Cross validation if the request method is GET else it will return "Not Acceptable" status
-        if($this->get_request_method() != "GET")
-        {
-                $this->response('',406);
-        }
-        $dir = 'sqlite:/etc/SmartHome/Databases/SysLog.sqlite';
-        $dbh  = new PDO($dir) or die("cannot open the database");
-        $query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
-        while ($entry = $query->fetch(SQLITE_NUM))
-        {
-                $result[] = $entry;
-        }
- 	$dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
-        $dbh  = new PDO($dir) or die("cannot open the database");
-        $query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
-        while ($entry = $query->fetch(SQLITE_NUM))
-        {
-                $result[] = $entry;
-        }
+    if($this->get_request_method() !== "GET")
+    {
+            $this->response('',406);
+    }
+    $dir = 'sqlite:/etc/SmartHome/Databases/SysLog.sqlite';
+    $dbh  = new PDO($dir) or die("cannot open the database");
+    $query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
+    while ($entry = $query->fetch(SQLITE_NUM))
+    {
+            $result[] = $entry;
+    }
+    $dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
+    $dbh  = new PDO($dir) or die("cannot open the database");
+    $query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
+    while ($entry = $query->fetch(SQLITE_NUM))
+    {
+            $result[] = $entry;
+    }
 
 
-        $this->response($this->json($result), 200);
+    $this->response(json_encode($result), 200);
 }
 
 private function getallresults()
 {
 	// Cross validation if the request method is GET else it will return "Not Acceptable" status
-	if($this->get_request_method() != "GET")
+	if($this->get_request_method() !== "GET")
 	{
 		$this->response('',406);
 	}
 	$dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
-        $dbh  = new PDO($dir) or die("cannot open the database");
+    $dbh  = new PDO($dir) or die("cannot open the database");
 	$query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
 	while ($entry = $query->fetch(SQLITE_NUM))
 	{
@@ -122,14 +115,14 @@ private function getallresults()
 
 }
 
-
+// This method needs to be cleaned up....
 private function status()
 {
 	$namearray = array("Front Door", "Back Door", "Garage Door", "Bedroom Windows", "Upstairs Windows",
                    "Hallway Motion", "Livingroom Motion", "Front Windows", "Garage Windows",
                    "Attic Door", "Livingroom/Kitchen Windows");
 	// Cross validation if the request method is GET else it will return "Not Acceptable" status
-        if($this->get_request_method() != "GET")
+        if($this->get_request_method() !== "GET")
         {
                 $this->response('',406);
         }
@@ -148,7 +141,7 @@ private function status()
 	}
 
 	// If success everythig is good send header as "OK" and return list of users in JSON format
-	$this->response(json_encode($result, true), 200);
+	$this->response(json_encode($result), 200);
 }
 }
 
