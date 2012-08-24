@@ -13,13 +13,13 @@ class pinStructure:
 	self.timeslo = 0
 
 zones = []
-mysql = []
+sqlcache = []
 
 # Setup the GPIO pins for input 
 def setup():
 	con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
-        cur = con.cursor()
-        
+  	cur = con.cursor()
+
 	for row in cur.execute('SELECT * FROM Zones'):
         	zones.append(pinStructure(row[1], row[2], True, time.time()))
 		pinMode(row[1], INPUT)
@@ -64,7 +64,7 @@ def updatedb(zone):
         	con.close()
 		addqueued()
 	except:
-		mysql.append(pinStructure(zone.pin, zone.name, zone.state, zone.lastevent))
+		sqlcache.append(pinStructure(zone.pin, zone.name, zone.state, zone.lastevent))
 		e = sys.exc_info()[1]
 		print e
 		
@@ -73,11 +73,11 @@ def addqueued():
 	con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
 	cur = con.cursor()
 
-	for entries in mysql:
+	for entries in sqlcache:
 		cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
 		con.commit()		
 	con.close()
-	del mysql[:]
+	del sqlcache[:]
 
 # Overview: Send an email when a zone has been left opened for more than 5 minutes.
 # Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
