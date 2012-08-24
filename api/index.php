@@ -15,10 +15,9 @@ public function __construct()
 public function processApi()
 {
 	$publickey = $_REQUEST['key'];
-	
 	$dbh = new PDO('sqlite:/etc/SmartHome/Databases/APIUsers.sqlite');
 	$results = $dbh->Query("SELECT * from Users WHERE PublicKey = '$publickey'");
-	while ($row = $results->Fetch(PDO::FETCH_ASSOC)) 
+	while ($row = $results->Fetch(PDO::FETCH_ASSOC))
 	{
 		$key = $row['2'];
 	}
@@ -34,6 +33,7 @@ public function processApi()
 	}
 	else
 	{
+		echo $hash;
     		$this->response('Unauthorized',401);
 	}
 }
