@@ -15,11 +15,12 @@ public function __construct()
 public function processApi()
 {
 	$publickey = $_REQUEST['key'];
-	
-	$dbh = new PDO('sqlite:/etc/SmartHome/Databases/APIUsers.sqlite');
-	$results = $dbh->Query("SELECT * from Users WHERE PublicKey = '$publickey'");
-	while ($row = $results->Fetch(PDO::FETCH_ASSOC)) 
-	{
+	$dir = 'sqlite:/etc/SmartHome/Databases/APIUsers.sqlite';
+    	$dbh  = new PDO($dir) or die("cannot open the database");
+    	$query =  "SELECT * from Users WHERE PublicKey = '$publickey'";
+
+	foreach ($dbh->query($query) as $row)
+    	{
 		$key = $row['2'];
 	}
 
