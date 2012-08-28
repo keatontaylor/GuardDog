@@ -1,5 +1,5 @@
 Guard Dog README
-===============
+================
 
 After many weeks of not updating this blog I've finally managed to get around to completing the majority of the hardware requirements for the open source security system I've been developing. I've migrated from using an Arduino for detecting events to using a beagle-bone so that I could centralize processing of all the events and provide a single platform that could be used for installation.
 
