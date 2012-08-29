@@ -13,6 +13,7 @@ class pinStructure:
 	self.timeslo = 0
 
 # Add class that contains the arrays to remove the use of globals.
+# Determine if this class needs to be moved to a setup file or if it is okay to stay into here.
 zones = []
 sqlcache = []
 
