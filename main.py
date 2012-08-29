@@ -15,6 +15,7 @@ class zones:
 	    cur = con.cursor()
 	    for row in cur.execute('SELECT * FROM Zones'):
 		cls.zonearr.append(pinStructure(row[1], row[2]))
+	    con.close()
             return cls.zonearr
         else:
             return cls.zonearr
