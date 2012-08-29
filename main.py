@@ -29,10 +29,6 @@ class pinStructure:
 	self.lastevent = lastevent
 	self.timeslo = 0
 
-# Add class that contains the arrays to remove the use of globals.
-# Determine if this class needs to be moved to a setup file or if it is okay to stay into here.
-sqlcache = []
-
 # Setup the GPIO pins for input 
 def setup():
 	for zone in zones.getZones():
@@ -77,23 +73,10 @@ def updatedb(zone):
         	cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
 		con.commit()
         	con.close()
-		addqueued()
 	except:
-		sqlcache.append(pinStructure(zone.pin, zone.name, zone.state, zone.lastevent))
 		e = sys.exc_info()[1]
 		print e
 		
-# Overview: Used to add the zone values to the database once the mysql database comes back online.
-def addqueued():
-	con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
-	cur = con.cursor()
-
-	for entries in sqlcache:
-		cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
-		con.commit()		
-	con.close()
-	del sqlcache[:]
-
 # Overview: Send an email when a zone has been left opened for more than 5 minutes.
 # Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
 # This needs to be turned into a external class. No real need for it here and it also needs to be used in other places. 
