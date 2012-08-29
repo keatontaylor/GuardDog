@@ -12,6 +12,7 @@ class pinStructure:
 	self.lastevent = lastevent
 	self.timeslo = 0
 
+# Add class that contains the arrays to remove the use of globals.
 zones = []
 sqlcache = []
 
@@ -59,6 +60,7 @@ def updatedb(zone):
 	try:
 		con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
         	cur = con.cursor()
+		# This line need to be cleaned up a bit...
         	cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
 		con.commit()
         	con.close()
@@ -81,6 +83,7 @@ def addqueued():
 
 # Overview: Send an email when a zone has been left opened for more than 5 minutes.
 # Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
+# This needs to be turned into a external class. No real need for it here and it also needs to be used in other places. 
 def sendemail(zone):
 	zone.timeslo = zone.timeslo + 1
 	timeslo = (zone.timeslo * 5)
