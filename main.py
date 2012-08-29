@@ -31,7 +31,7 @@ class pinStructure:
 # Setup the GPIO pins for input 
 def setup():
 	for zone in zones.getZones():
-		pinMode(zone.pin, INPUT)
+		pinMode(zone.pin, INPUT, -1)
 
 # Overview: Loops continously pooling each of the pins connected to the alarm door window and motion sensors.
 #           Checks if the zone has changed state and then executes commands to update the sql database.	

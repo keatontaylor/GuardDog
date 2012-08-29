@@ -15,9 +15,9 @@ public function __construct()
 public function processApi()
 {
 	$publickey = $_REQUEST['key'];
-	$dir = 'sqlite:/etc/SmartHome/Databases/APIUsers.sqlite';
+	$dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
     	$dbh  = new PDO($dir) or die("cannot open the database");
-    	$query =  "SELECT * from Users WHERE PublicKey = '$publickey'";
+    	$query =  "SELECT * from Keys WHERE PublicKey = '$publickey'";
 
 	foreach ($dbh->query($query) as $row)
     	{
@@ -77,13 +77,6 @@ private function getsyslog()
     if($this->get_request_method() !== "GET")
     {
             $this->response('',406);
-    }
-    $dir = 'sqlite:/etc/SmartHome/Databases/SysLog.sqlite';
-    $dbh  = new PDO($dir) or die("cannot open the database");
-    $query = $dbh->query('SELECT * from Log ORDER BY Time DESC LIMIT 30');
-    while ($entry = $query->fetch(SQLITE_NUM))
-    {
-            $result[] = $entry;
     }
     $dir = 'sqlite:/etc/SmartHome/Databases/Security.sqlite';
     $dbh  = new PDO($dir) or die("cannot open the database");
