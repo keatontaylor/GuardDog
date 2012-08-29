@@ -10,7 +10,6 @@ class zones:
         zonearr = []
         @classmethod
         def getZones(cls):
-
                 if not cls.zonearr:
                         con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
                         cur = con.cursor()
