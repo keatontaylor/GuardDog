@@ -1,8 +1,25 @@
-from bbio import *
+# Default libs.
 import sqlite3 as lite
 from smtplib import SMTP_SSL
 from email.MIMEText import MIMEText
-from config import *
+# User libs.
+from bbio import *
+import config
+
+class zones:
+        zonearr = []
+        @classmethod
+        def getZones(cls):
+
+                if not cls.zonearr:
+                        con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
+                        cur = con.cursor()
+
+                        for row in cur.execute('SELECT * FROM Zones'):
+                                cls.zonearr.append(pinStructure(row[1], row[2], True, time.time()))
+                        return cls.zonearr
+                else:
+                        return cls.zonearr
 
 class pinStructure:
     def __init__(self, pin, name, state, lastevent):
@@ -14,22 +31,17 @@ class pinStructure:
 
 # Add class that contains the arrays to remove the use of globals.
 # Determine if this class needs to be moved to a setup file or if it is okay to stay into here.
-zones = []
 sqlcache = []
 
 # Setup the GPIO pins for input 
 def setup():
-	con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
-  	cur = con.cursor()
-
-	for row in cur.execute('SELECT * FROM Zones'):
-        	zones.append(pinStructure(row[1], row[2], True, time.time()))
-		pinMode(row[1], INPUT)
+	for zone in zones.getZones():
+		pinMode(zone.pin, INPUT)
 
 # Overview: Loops continously pooling each of the pins connected to the alarm door window and motion sensors.
 #           Checks if the zone has changed state and then executes commands to update the sql database.	
 def loop():
-	for zone in zones:
+	for zone in zones.getZones():
 		curstate = digitalRead(zone.pin)
 
 		if curstate == 0 and zone.state == True:
