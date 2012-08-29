@@ -15,7 +15,7 @@ class zones:
 	    cur = con.cursor()
 	    for row in cur.execute('SELECT * FROM Zones'):
 		cls.zonearr.append(pinStructure(row[1], row[2]))
-                return cls.zonearr
+            return cls.zonearr
         else:
             return cls.zonearr
 
@@ -54,7 +54,7 @@ def loop():
 		print zone.name + " Left Opened"
 		zone.lastevent = time.time()
 		sendemail(zone)
-
+    toggle(USR3)
     delay(500) # Give the CPU a little break.				
 
 # Overview: Used to update the database with the zone information.
