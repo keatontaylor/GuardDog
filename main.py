@@ -7,17 +7,17 @@ from bbio import *
 import config
 
 class zones:
-        zonearr = []
-        @classmethod
-        def getZones(cls):
-                if not cls.zonearr:
-                        con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
-                        cur = con.cursor()
-                        for row in cur.execute('SELECT * FROM Zones'):
-                                cls.zonearr.append(pinStructure(row[1], row[2]))
-                        return cls.zonearr
-                else:
-                        return cls.zonearr
+    zonearr = []
+    @classmethod
+    def getZones(cls):
+		if not cls.zonearr:
+			con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
+			cur = con.cursor()
+			for row in cur.execute('SELECT * FROM Zones'):
+				cls.zonearr.append(pinStructure(row[1], row[2]))
+                return cls.zonearr
+            else:
+                return cls.zonearr
 
 class pinStructure:
     def __init__(self, pin, name):
@@ -66,11 +66,11 @@ def loop():
 def updatedb(zone):
 	try:
 		con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
-        	cur = con.cursor()
+        cur = con.cursor()
 		# This line need to be cleaned up a bit...
-        	cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
+        cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
 		con.commit()
-        	con.close()
+        con.close()
 	except:
 		e = sys.exc_info()[1]
 		print e
