@@ -38,7 +38,7 @@ def setup():
 
 def loop():
   """ Loops continously pooling each of the pins connected to each zone.
-	   Checks if the zone has changed state then updates the database. """
+      Checks if the zone has changed state then updates the database. """
   for zone in framework.zones.getZones():
     curstate = digitalRead(zone.pin)
     if curstate == 0 and zone.state == True:
