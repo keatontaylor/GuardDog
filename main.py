@@ -3,6 +3,7 @@ from smtplib import SMTP_SSL
 from email.MIMEText import MIMEText
 # User libs.
 from bbio import *
+# change this to a .cfg file at some point.
 import inc.config as config
 import inc.framework as framework
 
@@ -33,22 +34,18 @@ def loop():
         print zone.name + " Left Opened"
         zone.lastevent = time.time()
         sendemail(zone)
-  toggle(USR3)
+  toggle(USR3) # Show activity that this script is running.
   delay(500) # Give the CPU a little break.				
 
 # Overview: Used to update the database with the zone information.
 # Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
 def updatedb(zone):
-  try:
-    con = framework.lite.connect('/etc/SmartHome/Databases/Security.sqlite')
-    cur = con.cursor()
-    # This line need to be cleaned up a bit...
-    cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
-    con.commit()
-    con.close()
-  except:
-    e = sys.exc_info()[1]
-    print e
+  con = framework.lite.connect('/etc/SmartHome/Databases/Security.sqlite')
+  cur = con.cursor()
+  # This line need to be cleaned up a bit...
+  cur.execute("INSERT INTO Log(Time, Zone, State) VALUES(%s, %s, %s))", [zone.lastevent, zone.name, zone.state])
+  con.commit()
+  con.close()
 		
 # Overview: Send an email when a zone has been left opened for more than 5 minutes.
 # Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
