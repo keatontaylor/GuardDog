@@ -1,20 +1,19 @@
-# Default libs.
+""" Default libs. """
 from smtplib import SMTP_SSL
 from email.MIMEText import MIMEText
-# User libs.
+""" User libs. """
 from bbio import *
-# change this to a .cfg file at some point.
-import inc.config as config
+import inc.config as config # Change this to a .cfg file and parse.
 import inc.framework as framework
 
-
-# Setup the GPIO pins for input 
+""" Does initial setup of the pins by settings them to pulldown inputs. """
 def setup():
   for zone in framework.zones.getZones():
     pinMode(zone.pin, INPUT, -1)
 
-# Overview: Loops continously pooling each of the pins connected to the alarm door window and motion sensors.
-#           Checks if the zone has changed state and then executes commands to update the sql database.	
+
+""" Loops continously pooling each of the pins connected to each zone.
+    Checks if the zone has changed state then updates the database. """
 def loop():
   for zone in framework.zones.getZones():
     curstate = digitalRead(zone.pin)
@@ -37,19 +36,17 @@ def loop():
   toggle(USR3) # Show activity that this script is running.
   delay(500) # Give the CPU a little break.				
 
-# Overview: Used to update the database with the zone information.
-# Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
+""" Updates the database with the new zone state and last event time. """
 def updatedb(zone):
   con = framework.lite.connect('/etc/SmartHome/Databases/Security.sqlite')
   cur = con.cursor()
-  # This line need to be cleaned up a bit...
-  cur.execute("INSERT INTO Log(Time, Zone, State) VALUES(%s, %s, %s))", [zone.lastevent, zone.name, zone.state])
+  cur.execute("INSERT INTO Log(Time, Zone, State) VALUES(?, ?, ?)", [zone.lastevent, zone.name, zone.state])
   con.commit()
   con.close()
-		
-# Overview: Send an email when a zone has been left opened for more than 5 minutes.
-# Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
-# This needs to be turned into a external class. No real need for it here and it also needs to be used in other places. 
+
+""" Sends email to the recepients in the config file using the smtp credentials
+    in the config file. """
+# TODO: Move into framework.
 def sendemail(zone):
   zone.timeslo = zone.timeslo + 1
   timeslo = (zone.timeslo * 5)
