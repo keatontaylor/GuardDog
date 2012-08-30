@@ -1,5 +1,5 @@
 .gitignore
+*.pyc
 config.py
-config.pyc
 .DS_Store
 Resources/
