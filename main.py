@@ -1,42 +1,21 @@
 # Default libs.
-import sqlite3 as lite
 from smtplib import SMTP_SSL
 from email.MIMEText import MIMEText
 # User libs.
 from bbio import *
-import config
+import inc.config as config
+import inc.framework as framework
 
-class zones:
-    zonearr = []
-    @classmethod
-    def getZones(cls):
-	if not cls.zonearr:
-	    con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
-	    cur = con.cursor()
-	    for row in cur.execute('SELECT * FROM Zones'):
-		cls.zonearr.append(pinStructure(row[1], row[2]))
-	    con.close()
-            return cls.zonearr
-        else:
-            return cls.zonearr
-
-class pinStructure:
-    def __init__(self, pin, name):
-        self.pin = pin
-	self.name = name
-	self.state = True
-	self.lastevent = time.time()
-	self.timeslo = 0
 
 # Setup the GPIO pins for input 
 def setup():
-    for zone in zones.getZones():
+    for zone in framework.zones.getZones():
 	pinMode(zone.pin, INPUT, -1)
 
 # Overview: Loops continously pooling each of the pins connected to the alarm door window and motion sensors.
 #           Checks if the zone has changed state and then executes commands to update the sql database.	
 def loop():
-    for zone in zones.getZones():
+    for zone in framework.zones.getZones():
 	curstate = digitalRead(zone.pin)
 
 	if curstate == 0 and zone.state == True:
@@ -62,7 +41,7 @@ def loop():
 # Inputs: zone object (zone.pins, zone.name, zone.state, zone.lastevent, zone.timeslo)
 def updatedb(zone):
     try:
- 	con = lite.connect('/etc/SmartHome/Databases/Security.sqlite')
+ 	con = framework.lite.connect('/etc/SmartHome/Databases/Security.sqlite')
         cur = con.cursor()
 	# This line need to be cleaned up a bit...
         cur.execute("INSERT INTO Log(Time, Zone, State) VALUES('"+str(zone.lastevent)+"', '"+str(zone.name)+"' , '"+str(zone.state)+"')")
