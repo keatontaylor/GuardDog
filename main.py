@@ -23,7 +23,7 @@
  limitations under the License.
 """
 
-# Defualt libs.
+# Default libs.
 from smtplib import SMTP_SSL
 from email.MIMEText import MIMEText
 # User libs.
@@ -41,12 +41,12 @@ def loop():
       Checks if the zone has changed state then updates the database. """
   for zone in framework.zones.getZones():
     curstate = digitalRead(zone.pin)
-    if curstate == 0 and zone.state == True:
+    if curstate == 0 and zone.state:
       print zone.name + " Opened"
       zone.state = False
       zone.lastevent = time.time()
       updatedb(zone)
-    elif curstate == 1 and zone.state == False:
+    elif curstate == 1 and not zone.state:
       print zone.name + " Closed"
       zone.state = True
       zone.lastevent = time.time()
