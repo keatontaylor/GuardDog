@@ -1,3 +1,4 @@
+.gitignore
 config.py
 config.pyc
 .DS_Store
