@@ -13,6 +13,9 @@ class DBM():
 
       # Loop through each zone and develop its cluster
       for zone in Zones
+         runningSum = 0
+         distanceTotal = 0
+
          # Find the nearest neighbor of each point
          for dp in zone.dpList
             if zone.matchupDict[dp] == NULL
@@ -39,11 +42,23 @@ class DBM():
                      zone.matchupDict[newParter] = zone.matchupDict[dp[0], dp[1], distance]
                else
 	              zone.matchupDict[newParter] = zone.matchupDict[dp[0], dp[1], distance]
+	        # Keep a running total of the distances
+	        distanceTotal = distanceTotal + distance
 	
-         # TODO: Find the mean and standard deviation of the min distances in this cluster
-         
+         # TFind the mean and standard deviation of the min distances in this cluster
+         mean = distanceTotal / count(zone.dpList)
+         for dp in zone.dpList
+            runningSum = runningSum + (zone.dpList[dp[2]] - mean)^2
+
+         stdDev = runningSum / count(zone.dpList)
+
          # TODO: Put each point into a cluster with its nearest neighbor if its distance
          # is within two standard deviations of the mean.
+         stdDev = stdDev * 2
+         
+         for dp in zone.dpList
+            if zone.matchupDict[dp[2]] <= stdDev
+	            # add the zone to the same cluster as its partner
 
          # TODO: Test this code and evaluate whether this clustering method is useful.
 
