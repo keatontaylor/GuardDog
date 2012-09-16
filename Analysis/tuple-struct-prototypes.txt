@@ -1,0 +1,23 @@
+tuple dp:
+time of day
+day of week
+
+tuple matchupDict[dp]:
+partner's tod
+partner's dow
+distance to partner
+
+tuple cluster:
+dplist
+count
+center tod
+center dow
+
+how to find out which cluster contains the point which is closest to any arbitrary point?
+--> find the closest point within each cluster to that point, find the distance and compare with every other cluster
+
+
+how to find out which point within a cluster is nearest to any arbitrary point?
+--> find the direction towards that point from the centerpoint
+--> find the point farthest from the center in that general direction
+--> find the points in the cluster nearest to the vector from the centerpoint to the arbitrary point (radially)

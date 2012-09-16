@@ -59,8 +59,10 @@ class DBM():
          for dp in zone.dpList
             if zone.matchupDict[dp[2]] <= stdDev
 	            # add the zone to the same cluster as its partner
+                
 
          # TODO: Test this code and evaluate whether this clustering method is useful.
+         
 
    def developNN():
       # TODO: write code to take an input database containing cluster info and then write a neural
